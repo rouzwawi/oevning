@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.js"></script>
+    <style>
+        body, input {
+            font-family: monospace;
+        }
+
+        input, span.click {
+            font-size: 2em;
+        }
+
+        .red {
+            color: red;
+        }
+
+        .green {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+<input id="text" type="text" width="100" value="1,2"></input>
+<a href="javascript: read();"><span class="click">read() -> doit();</span></a>
+
+<div id="foo"></div>
+
+<script>
+
+var foo;
+var a = [1,2];
+
+
+function doit() {
+    var bound = foo
+        .selectAll('h2')
+        .data(a);
+
+    // update existing
+    bound
+        .classed('green', false)
+
+    // new
+    bound.enter().append('h2')
+        .classed('green', true);
+
+    // new and existing
+    bound
+        .classed('red', false)
+        .text(function(d,i) { return 'a[' + i + '] = ' + d; });
+
+    // removed
+    bound.exit()
+        .classed('red', true);
+}
+
+function read() {
+    var t = document.getElementById('text').value;
+    a = t.split(',').map(function(d) { return d*1; });
+    doit();
+}
+
+window.onload = function() {
+    foo = d3.select('#foo');
+
+    doit();
+}
+
+</script>
+
+</body>
+</html>
