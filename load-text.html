@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+
+
+<script type="text/javascript">
+
+var maxWidth = 30;
+
+function getWidth(word) {
+    return word.length;
+}
+
+function layoutLine(line, y, layout) {
+    var x = 0;
+    line.forEach(function(word) {
+        var wordWidth = getWidth(word);
+        layout.push({
+            type: 'word',
+            word: word,
+            x: x,
+            y: y,
+            w: wordWidth
+        });
+
+        x += wordWidth;
+    });
+
+    layout.push({
+        type: 'fill',
+        word: '',
+        x: x,
+        y: y,
+        w: maxWidth - x
+    });
+
+    console.log("layouted line", line);
+}
+
+function layoutLines(lines) {
+    var y = 0;
+    var layout = [];
+
+    lines.forEach(function(line) {
+        var x = 0;
+        var workingLine = [];
+
+        line.forEach(function(word) {
+            if (word == "") return;
+
+            var wordWidth = getWidth(word);
+
+            if (x + wordWidth <= maxWidth) {
+                // line is not done
+                workingLine.push(word);
+                x += wordWidth;
+
+                console.log(workingLine);
+
+            } else {
+                // line is already done
+                // do something about it
+                layoutLine(workingLine, y, layout);
+
+                // prepare for next line
+                workingLine = [word];
+                x = wordWidth;
+                y++;
+
+                console.log(workingLine);
+            }
+        });
+
+        // layout any remainder of the line
+        if (workingLine.length > 0) {
+            layoutLine(workingLine, y, layout);
+        }
+        y++;
+    });
+
+    return layout;
+}
+
+jQuery(function() {
+
+    $.get( "some.txt", function (text) {
+
+        var lines = window.lines = text.split('\n')
+            .map(function(line) {
+                return line.trim().split(/\s+/);
+            });
+
+        var layout = layoutLines(lines);
+
+        console.log(layout);
+
+    });
+
+});
+</script>
+
+</body>
+</html>
